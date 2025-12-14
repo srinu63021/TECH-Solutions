@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tech-Shop — Cart</title>
+<style>
+  /* ---------- Reset & Base ---------- */
+  *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;}
+  html,body{height:100%;}
+  body{
+    background:#0b0b0c;
+    color:#e6eef5;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.4;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:22px 36px;
+    background:linear-gradient(180deg,#0b0b0c,#0f0f10);
+    border-bottom:1px solid #121213;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .logo{font-size:20px;color:#cfe4ff;font-weight:700;}
+  nav.nav-links{display:flex;gap:18px;align-items:center;}
+  nav.nav-links a{
+    color:#bfc7cc;text-decoration:none;font-weight:600;font-size:14px;padding:8px 10px;border-radius:6px;
+  }
+  nav.nav-links a:hover{background:#121214;color:#fff;}
+  .header-right{display:flex;gap:14px;align-items:center;}
+  .icon-btn{color:#cfd8de;font-size:18px;background:transparent;border:none;cursor:pointer;}
+  .cart-icon{position:relative;cursor:pointer;padding:6px 8px;border-radius:8px;background:#0f1113;border:1px solid #1a1a1a;}
+  .cart-badge{position:absolute;top:-6px;right:-6px;background:#e33b3b;color:white;padding:4px 7px;border-radius:999px;font-size:12px;font-weight:700;min-width:22px;text-align:center;}
+
+  /* ---------- Page Layout ---------- */
+  .page {
+    width:100%;
+    max-width:1200px;
+    margin:28px auto;
+    padding:0 18px;
+  }
+  .stack{
+    display:grid;
+    grid-template-columns: 1fr 360px;
+    gap:28px;
+    align-items:start;
+  }
+
+  /* ---------- Cart Items Column ---------- */
+  .cart-column{
+    background:linear-gradient(#0e1012,#0c0d0f);
+    border:1px solid #161718;
+    padding:18px;
+    border-radius:10px;
+  }
+  .cart-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .cart-header h2{font-size:20px;color:#dfe8ef;}
+  .cart-list{display:flex;flex-direction:column;gap:14px;}
+
+  .cart-item{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+    padding:16px;
+    border-radius:8px;
+    background:linear-gradient(#0f1113,#0d0e10);
+    border:1px solid #1a1b1d;
+  }
+  .ci-image{
+    width:120px;
+    height:120px;
+    background:#0b0b0b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .ci-image img{width:100%;height:100%;object-fit:contain;display:block;}
+
+  .ci-body{flex:1;display:flex;flex-direction:column;gap:8px;}
+  .ci-title{font-weight:700;color:#e8f2f9;font-size:15px;}
+  .ci-meta{font-size:13px;color:#9fb0bd;}
+  .ci-price-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+  .ci-price{font-weight:800;color:#e9f1f6;font-size:16px;}
+  .ci-old{font-size:13px;color:#7f8590;text-decoration:line-through;}
+
+  .ci-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+  .qty-box{
+    display:flex;align-items:center;gap:8px;background:#101214;padding:6px;border-radius:6px;border:1px solid #232425;
+  }
+  .qty-box button{background:#111214;border:none;color:#fff;padding:6px 10px;border-radius:5px;cursor:pointer;font-weight:700;}
+  .qty-count{min-width:28px;text-align:center;font-weight:700;color:#ff6b6b;}
+
+  .delete-btn{background:transparent;border:1px solid #2b2b2b;color:#f05a5a;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;}
+
+  /* small divider */
+  .divider{height:1px;background:#151516;margin:10px 0;border-radius:2px;}
+
+  /* ---------- Summary Column ---------- */
+  .summary{
+    background:linear-gradient(#0e1012,#0c0d0f);
+    padding:20px;border-radius:10px;border:1px solid #161718;
+    position:sticky;top:88px;
+  }
+  .summary h3{font-size:18px;color:#dfe8ef;margin-bottom:12px;}
+  .summary .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;}
+  .summary .row.small{font-size:13px;color:#9fb0bd;}
+  .summary .total{font-weight:900;font-size:22px;color:#e9f1f6;margin-top:12px;padding-top:12px;border-top:1px solid #1b1b1b;}
+  .checkout-btn{
+    width:100%;
+    margin-top:16px;
+    background:#e02020;
+    color:#fff;padding:12px;border:none;border-radius:8px;font-weight:800;font-size:16px;
+    cursor:pointer;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:36px;padding:32px 20px;background:#070708;border-top:1px solid #121213;color:#9da8b0;
+  }
+  .footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;max-width:1200px;margin:0 auto;}
+  .footer-grid h5{color:#dfe8ef;margin-bottom:10px;}
+  .footer-grid a{display:block;color:#9da8b0;text-decoration:none;margin-bottom:8px;font-size:14px;}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:1000px){
+    .stack{grid-template-columns:1fr 320px;}
+    .ci-image{width:100px;height:100px;}
+  }
+  @media(max-width:820px){
+    .stack{grid-template-columns:1fr;gap:18px;}
+    .summary{position:relative;top:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div style="display:flex;gap:18px;align-items:center">
+    <div class="logo">Tech-Shop</div>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="product.html">Products</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </div>
+
+  <div class="header-right">
+    <button class="icon-btn" title="Search">🔍</button>
+    <button class="icon-btn" title="Wishlist">♡</button>
+
+    <div class="cart-icon" id="headerCartBtn" title="Open cart">
+      🛒
+      <div class="cart-badge" id="headerCartCount">0</div>
+    </div>
+
+    <button class="icon-btn" title="Profile">👤</button>
+  </div>
+</header>
+
+<!-- Page -->
+<section class="page" aria-label="Cart page content">
+  <div class="stack">
+
+    <!-- LEFT: Cart Items -->
+    <div class="cart-column" aria-labelledby="cartTitle">
+      <div class="cart-header">
+        <h2 id="cartTitle">Shopping Cart</h2>
+        <div style="color:#9fb0bd;font-size:14px;" id="itemsCount">(0 items)</div>
+      </div>
+
+      <div class="cart-list" id="cartList">
+        <!-- JS populates cart items here -->
+      </div>
+    </div>
+
+    <!-- RIGHT: Order Summary -->
+    <aside class="summary" aria-labelledby="summaryTitle">
+      <h3 id="summaryTitle">Order Summary</h3>
+
+      <div class="row small"><div>Original Price</div><div id="originalPrice">₹0</div></div>
+      <div class="row small"><div>Discount</div><div id="discountPrice" style="color:#57d96b;">- ₹0</div></div>
+      <div class="row small"><div>Delivery</div><div id="deliveryPrice" style="color:#57d96b;">Free</div></div>
+
+      <div class="total"><div style="display:flex;justify-content:space-between;align-items:center;"><div>Total Price</div><div id="totalPrice">₹0</div></div></div>
+
+      <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+    </aside>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid" role="contentinfo">
+    <div>
+      <h5>Tech-Shop</h5>
+      <p style="color:#9da8b0;font-size:14px;margin-bottom:10px;">Subscribe to our Email alerts to receive early discount offers, and new products info.</p>
+      <input placeholder="Email Address" style="width:100%;padding:10px;border-radius:6px;background:#0b0b0c;border:1px solid #1b1b1b;color:#dfe8ef;margin-bottom:8px;">
+      <button style="background:#e02020;color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:700;">Subscribe</button>
+    </div>
+
+    <div>
+      <h5>Help</h5>
+      <a href="#">FAQs</a>
+      <a href="#">Track Order</a>
+      <a href="#">Cancel Order</a>
+      <a href="#">Return Order</a>
+      <a href="#">Warranty Info</a>
+    </div>
+
+    <div>
+      <h5>Policies</h5>
+      <a href="#">Return Policy</a>
+      <a href="#">Security</a>
+      <a href="#">Sitemap</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms & Conditions</a>
+    </div>
+
+    <div>
+      <h5>Company</h5>
+      <a href="#">About Us</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Service Centres</a>
+      <a href="#">Careers</a>
+      <a href="#">Affiliates</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:22px;color:#7c8488;">2024 | All Rights Reserved. Built by | ADARSHA HELVAR</div>
+</footer>
+
+<script>
+/*
+  Cart page JS
+  - Reads cart from localStorage key "techShopCart" (expected array with objects containing id,title,brand,category,price,oldPrice,images,qty)
+  - If none found, uses a sample cart so UI isn't empty
+  - Provides increase/decrease qty, remove item
+  - Calculates:
+      Original Price = sum(oldPrice * qty) if oldPrice exists else sum(price * qty)
+      Discount = Original Price - sum(price * qty)
+      Total Price = sum(price * qty)
+  - Updates header cart count
+*/
+
+const CART_KEY = 'techShopCart';
+
+const sampleCart = [
+  { id:1, title:'JBL Live 660NC Wireless Over-Ear NC Headphones', brand:'JBL', category:'Headphones', price:9999, oldPrice:14999, images:['./assets/jbl660nc-1.png'], qty:1 },
+  { id:2, title:'boAt Rockerz 518 On-Ear Wireless Headphones', brand:'boAt', category:'Headphones', price:1299, oldPrice:3990, images:['./assets/boat518-1.png'], qty:1 },
+  { id:3, title:'boAt Airdopes 131 Wireless In-Ear', brand:'boAt', category:'Earbuds', price:1099, oldPrice:2990, images:['./assets/boat131-1.png'], qty:1 },
+  { id:4, title:'boAt BassHeads 110 In-Ear Wired Earphones', brand:'boAt', category:'Earphones', price:449, oldPrice:999, images:['./assets/boat110-1.png'], qty:1 }
+];
+
+// load cart from localStorage or fallback
+let cart = [];
+try {
+  const raw = localStorage.getItem(CART_KEY);
+  if(raw) {
+    cart = JSON.parse(raw);
+    // ensure required fields
+    if(!Array.isArray(cart) || cart.length === 0) cart = sampleCart;
+  } else {
+    cart = sampleCart;
+  }
+} catch(e) {
+  console.warn('Failed reading cart from localStorage, using sample', e);
+  cart = sampleCart;
+}
+
+const cartListEl = document.getElementById('cartList');
+const itemsCountEl = document.getElementById('itemsCount');
+const headerCartCountEl = document.getElementById('headerCartCount');
+
+function saveCart(){
+  try{
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }catch(e){
+    console.warn('Could not save cart', e);
+  }
+}
+
+function formatINR(n){
+  return '₹' + Number(n).toLocaleString('en-IN');
+}
+
+function recalcAndRender(){
+  renderCart();
+  updateSummary();
+  updateHeaderCount();
+  saveCart();
+}
+
+function updateHeaderCount(){
+  const totalQty = cart.reduce((s,i)=>s+(i.qty||0),0);
+  headerCartCountEl.textContent = totalQty;
+  itemsCountEl.textContent = `(${totalQty} item${totalQty===1?'':'s'})`;
+}
+
+// render cart items to left column
+function renderCart(){
+  cartListEl.innerHTML = '';
+  if(!cart.length){
+    cartListEl.innerHTML = `<div style="padding:30px;text-align:center;color:#9fb0bd;">Your cart is empty.</div>`;
+    return;
+  }
+
+  cart.forEach((item, idx) => {
+    const imgSrc = (item.images && item.images[0]) ? item.images[0] : '';
+
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <div class="ci-image"><img src="${imgSrc}" alt="${escapeHtml(item.title)}"></div>
+      <div class="ci-body">
+        <div class="ci-title">${escapeHtml(item.title)}</div>
+        <div class="ci-meta">${escapeHtml(item.brand)} • ${escapeHtml(item.category)}</div>
+        <div class="ci-price-row">
+          <div class="ci-price">${formatINR(item.price)}</div>
+          <div class="ci-old">${item.oldPrice ? formatINR(item.oldPrice) : ''}</div>
+        </div>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="qty-box" aria-label="Quantity controls for ${escapeHtml(item.title)}">
+            <button class="decrease" data-index="${idx}">−</button>
+            <div class="qty-count">${item.qty}</div>
+            <button class="increase" data-index="${idx}">+</button>
+          </div>
+          <button class="delete-btn" data-index="${idx}" title="Remove item">Delete</button>
+        </div>
+      </div>
+      <div style="width:6px;"></div>
+    `;
+    cartListEl.appendChild(div);
+  });
+
+  // attach handlers
+  cartListEl.querySelectorAll('.increase').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const i = parseInt(b.dataset.index,10);
+      cart[i].qty = (cart[i].qty||0) + 1;
+      recalcAndRender();
+    });
+  });
+  cartListEl.querySelectorAll('.decrease').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const i = parseInt(b.dataset.index,10);
+      cart[i].qty = Math.max(1, (cart[i].qty||1) - 1);
+      recalcAndRender();
+    });
+  });
+  cartListEl.querySelectorAll('.delete-btn').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const i = parseInt(b.dataset.index,10);
+      cart.splice(i,1);
+      recalcAndRender();
+    });
+  });
+}
+
+// calculate totals and update summary box
+function updateSummary(){
+  // Original price (based on oldPrice if present; else price)
+  let originalPrice = 0;
+  let currentPrice = 0;
+
+  cart.forEach(i=>{
+    const qty = i.qty || 1;
+    if(i.oldPrice) originalPrice += (Number(i.oldPrice) * qty);
+    else originalPrice += (Number(i.price) * qty);
+    currentPrice += (Number(i.price) * qty);
+  });
+
+  const discount = Math.max(0, originalPrice - currentPrice);
+  const delivery = (currentPrice > 0 ? 'Free' : '-');
+
+  document.getElementById('originalPrice').textContent = formatINR(originalPrice);
+  document.getElementById('discountPrice').textContent = (discount>0?('- ' + formatINR(discount)) : formatINR(0));
+  document.getElementById('deliveryPrice').textContent = delivery;
+  document.getElementById('totalPrice').textContent = formatINR(currentPrice);
+}
+
+// safe escape for text
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#96;','=':'&#61;'})[s]);
+}
+
+// Checkout click
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+  // Redirect to a checkout page (create checkout.html when ready)
+  // For now store cart and go to checkout.html
+  saveCart();
+  window.location.href = 'checkout.html';
+});
+
+// initial render
+recalcAndRender();
+</script>
+
+</body>
+</html>

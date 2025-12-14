@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tech-Shop — All Products</title>
+<style>
+  /* ---------- Base & Reset ---------- */
+  *{box-sizing:border-box;margin:0;padding:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;}
+  html,body{height:100%;}
+  body{
+    background:#070708;
+    color:#e6e6e6;
+    padding:28px;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .logo {
+    color:#cdd6df;
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:0.2px;
+  }
+  .header-actions{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .icon-btn{
+    color:#bfc7cc;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    font-size:16px;
+    padding:8px;
+  }
+  .cart-info{
+    background:#0f0f10;
+    padding:8px 12px;
+    border-radius:8px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    border:1px solid #222;
+    cursor:pointer;
+  }
+  .cart-count{
+    background:#ff2a2a;
+    color:#fff;
+    padding:4px 7px;
+    border-radius:6px;
+    font-weight:700;
+    font-size:13px;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    gap:22px;
+    align-items:start;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    background:#0f0f10;
+    border:1px solid #1f1f1f;
+    padding:20px;
+    border-radius:8px;
+    min-height:600px;
+  }
+  .sidebar h4{
+    color:#bfc7cc;
+    font-size:13px;
+    margin-bottom:10px;
+    font-weight:700;
+  }
+  .search-input{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #232323;
+    background:#0b0b0c;
+    color:#e6e6e6;
+    margin-bottom:14px;
+    font-size:14px;
+  }
+  .select{
+    width:100%;
+    padding:8px 10px;
+    border-radius:6px;
+    margin-bottom:14px;
+    background:#0b0b0c;
+    color:#e6e6e6;
+    border:1px solid #232323;
+  }
+  .filter-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+  .filter-row{display:flex;gap:10px;align-items:center;color:#c2c9ce;font-size:13px;}
+  .range-label{font-size:13px;color:#99a0a6;margin-bottom:6px;}
+  input[type="range"]{width:100%;}
+
+  /* ---------- Product Grid ---------- */
+  .products-wrap{min-height:400px;}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+  }
+  /* card */
+  .card{
+    background:#0f0f10;
+    border:1px solid #1f1f1f;
+    padding:14px;
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition:transform .12s ease, box-shadow .12s ease;
+    min-height:340px;
+  }
+  .card:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(0,0,0,0.6);}
+  .img-wrap{
+    height:150px;
+    background:linear-gradient(180deg,#0b0b0c,#0f0f10);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border:1px solid #141414;
+  }
+  .img-wrap img{max-width:100%;max-height:100%;object-fit:contain;cursor:pointer;display:block;}
+
+  .card .title{font-weight:700;color:#e8eef5;font-size:14px;margin-top:6px;}
+  .meta{font-size:12px;color:#9aa3ab;margin-top:2px;}
+  .rating{color:#ffb86b;font-size:12px;margin-top:6px;}
+  .price-row{display:flex;align-items:center;gap:10px;margin-top:6px;}
+  .price-row .price{font-weight:800;font-size:16px;color:#f0f0f0;}
+  .price-row .old{font-size:12px;color:#7b8084;text-decoration:line-through;}
+  .offers{font-size:12px;color:#98a1a7;margin-top:6px;}
+
+  .btn-row{margin-top:auto;display:flex;flex-direction:column;gap:8px;}
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:6px;
+    padding:10px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .add-btn{background:#d60b0b;color:#fff;border:1px solid rgba(255,255,255,0.06);}
+  .buy-btn{background:transparent;color:#d60b0b;border:2px solid #d60b0b;}
+
+  /* ---------- Cart drawer ---------- */
+  .cart-drawer{
+    position:fixed;
+    right:28px;
+    top:86px;
+    width:360px;
+    max-height:70vh;
+    overflow:auto;
+    background:linear-gradient(180deg,#0f0f10,#0c0c0c);
+    border-radius:10px;
+    padding:14px;
+    border:1px solid #222;
+    display:none;
+    z-index:1500;
+  }
+  .cart-drawer h4{color:#dfe8ee;margin-bottom:12px;}
+  .cart-item{display:flex;gap:12px;align-items:center;padding:8px;border-radius:8px;background:#0b0b0c;margin-bottom:8px;border:1px solid #1b1b1b;}
+  .cart-item img{width:64px;height:64px;object-fit:cover;border-radius:6px;}
+  .cart-item .ci-info{flex:1;}
+  .small{font-size:13px;color:#b9c3c9;}
+  .qty-controls{display:flex;gap:8px;margin-top:6px;align-items:center;}
+  .qty-controls button{background:#151515;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;}
+  .remove-btn{background:#bf2b2b;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;}
+
+  .cart-summary{border-top:1px solid #1f1f1f;padding-top:10px;margin-top:6px;display:flex;flex-direction:column;gap:8px;}
+  .cart-summary .row{display:flex;justify-content:space-between;color:#d6dfe6;font-weight:700;}
+
+  /* ---------- Advantages ---------- */
+  .advantages{
+    margin-top:32px;
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .adv{flex:1;min-width:160px;background:#0f0f10;padding:16px;border-radius:10px;border:1px solid #191919;text-align:center;}
+  .adv h5{color:#e7eef4;margin-bottom:8px;font-size:14px;}
+  .adv p{color:#9da7ad;font-size:13px;}
+
+  /* ---------- Footer ---------- */
+  footer{margin-top:30px;color:#8b9499;}
+  .footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:18px;}
+  .footer-column h6{color:#d9e2e8;margin-bottom:10px;font-size:13px;}
+  .footer-column p,a{color:#9da7ad;font-size:13px;text-decoration:none;display:block;margin-bottom:8px;}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:1200px){ .grid{grid-template-columns:repeat(3,1fr);} .layout{grid-template-columns:220px 1fr;} }
+  @media(max-width:900px){ .grid{grid-template-columns:repeat(2,1fr);} .layout{grid-template-columns:1fr;} .sidebar{order:2;} .products-wrap{order:1;} .cart-drawer{right:16px;top:86px;width:320px;} }
+  @media(max-width:560px){
+    body{padding:14px;}
+    header{flex-direction:column;align-items:flex-start;gap:12px;}
+    .grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .cart-drawer{right:10px;top:100px;width:92vw;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Tech-Shop</div>
+  <div class="header-actions">
+    <button class="icon-btn" title="Search">🔍</button>
+    <div class="cart-info" id="cartBtn" title="Open cart">
+      <span>🛒</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </div>
+  </header>
+    <div class="logo">Tech-Shop</div>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="product.html">Products</a>
+      <a href="cart.html">cart</a>
+    </nav>
+  </div>
+  </div>
+</header>
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <input id="searchInput" class="search-input" placeholder="Search products..." />
+
+    <h4>Sort By</h4>
+    <select id="sortOptions" class="select">
+      <option value="latest">Latest</option>
+      <option value="priceLowHigh">Price: Low → High</option>
+      <option value="priceHighLow">Price: High → Low</option>
+      <option value="nameAToZ">Name: A → Z</option>
+      <option value="nameZToA">Name: Z → A</option>
+      <option value="ratingHighLow">Rating: High → Low</option>
+    </select>
+
+    <h4>Filter By Brand</h4>
+    <div class="filter-list" id="brandFilters">
+      <label class="filter-row"><input type="checkbox" name="brand" value="JBL"> JBL</label>
+      <label class="filter-row"><input type="checkbox" name="brand" value="boAt"> boAt</label>
+      <label class="filter-row"><input type="checkbox" name="brand" value="Sony"> Sony</label>
+    </div>
+
+    <h4>Filter By Category</h4>
+    <div class="filter-list" id="catFilters">
+      <label class="filter-row"><input type="checkbox" name="cat" value="Headphones"> Headphones</label>
+      <label class="filter-row"><input type="checkbox" name="cat" value="Earbuds"> Earbuds</label>
+      <label class="filter-row"><input type="checkbox" name="cat" value="Earphones"> Earphones</label>
+      <label class="filter-row"><input type="checkbox" name="cat" value="Neckband"> Neckband</label>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="range-label">Max Price: ₹<span id="priceLabel">20000</span></div>
+      <input type="range" id="priceRange" min="100" max="20000" value="20000">
+    </div>
+  </aside>
+
+  <!-- PRODUCTS -->
+  <main>
+    <div class="products-wrap">
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+    </div>
+
+    <!-- Advantages -->
+    <section style="margin-top:28px;">
+      <div class="advantages">
+        <div class="adv"><h5>Express Delivery</h5><p>Ships in 24 Hours</p></div>
+        <div class="adv"><h5>Brand Warranty</h5><p>100% Original products</p></div>
+        <div class="adv"><h5>Exciting Deals</h5><p>On all prepaid orders</p></div>
+        <div class="adv"><h5>Secure Payments</h5><p>SSL / Secure certificate</p></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div style="margin-top:28px;border-top:1px solid #171717;padding-top:24px;">
+        <div class="footer-grid">
+          <div class="footer-column">
+            <h6>Tech-Shop</h6>
+            <p>Subscribe to our email alerts to receive early discount offers and new product info.</p>
+            <input placeholder="Email Address" style="padding:8px;border-radius:6px;border:1px solid #222;background:#0b0b0c;color:#dfe9ef;width:100%;margin-top:8px;" />
+            <button style="margin-top:8px;padding:8px 12px;border-radius:6px;background:#d60b0b;color:#fff;border:none;font-weight:700;">Subscribe</button>
+          </div>
+          <div class="footer-column">
+            <h6>Help</h6>
+            <a href="#">FAQs</a>
+            <a href="#">Track Order</a>
+            <a href="#">Cancel Order</a>
+            <a href="#">Return Order</a>
+          </div>
+          <div class="footer-column">
+            <h6>Policies</h6>
+            <a href="#">Return Policy</a>
+            <a href="#">Security</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+          </div>
+          <div class="footer-column">
+            <h6>Company</h6>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="#">Careers</a>
+            <a href="#">Affiliates</a>
+          </div>
+        </div>
+        <div style="margin-top:18px;color:#7c8488;font-size:13px;text-align:center;">2024 | All Rights Reserved. Built by | ADARSHA HELVAR</div>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- Cart Drawer -->
+<div id="cartDrawer" class="cart-drawer" aria-hidden="true">
+  <h4>Your Cart</h4>
+  <div id="cartItems"></div>
+  <div class="cart-summary">
+    <div class="row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+    <div class="row"><span>Discount</span><span id="discount">₹0</span></div>
+    <div class="row" style="font-size:16px;"><strong>Total</strong><strong id="total">₹0</strong></div>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <button style="flex:1;padding:10px;border-radius:8px;background:#d60b0b;border:none;color:#fff;font-weight:800;cursor:pointer;" id="checkoutBtn">Proceed to Checkout</button>
+      <button style="flex:1;padding:10px;border-radius:8px;background:#111;border:1px solid #333;color:#dfe7ea;font-weight:700;cursor:pointer;" id="closeCartBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- PRODUCTS (ALL 19 as provided) ---------- */
+const PRODUCTS = [
+{id:1,title:'JBL Live 660NC',brand:'JBL',category:'Headphones',price:9999,oldPrice:14999,rating:5,images:['./assets/jbl660nc-1.png','./assets/jbl660nc-2.png','./assets/jbl660nc-3.png','./assets/jbl660nc-4.png'],offers:['Bank Offer 5% cashback','Free delivery']},
+{id:2,title:'boAt Rockerz 518',brand:'boAt',category:'Headphones',price:1299,oldPrice:3990,rating:5,images:['./assets/boat518-1.png','./assets/boat518-2.png','./assets/boat518-3.png','./assets/boat518-4.png'],offers:['Bank Offer 5% cashback']},
+{id:3,title:'boAt Airdopes 131',brand:'boAt',category:'Earbuds',price:1099,oldPrice:2990,rating:5,images:['./assets/boat131-1.png','./assets/boat131-2.png','./assets/boat131-3.png','./assets/boat131-4.png'],offers:['Special Price: Extra 10% off']},
+{id:4,title:'boAt BassHeads 110',brand:'boAt',category:'Earphones',price:449,oldPrice:999,rating:4,images:['./assets/boat110-1.png','./assets/boat110-2.png','./assets/boat110-3.png','./assets/boat110-4.png'],offers:['Flat ₹50 off']},
+{id:5,title:'Sony WH-XB910N',brand:'Sony',category:'Headphones',price:13489,oldPrice:19990,rating:4,images:['./assets/sonyXb910n-1.png','./assets/sonyXb910n-2.png','./assets/sonyXb910n-3.png','./assets/sonyXb910n-4.png'],offers:['Exchange Offer']},
+{id:6,title:'JBL Tune 760NC',brand:'JBL',category:'Headphones',price:5999,oldPrice:7799,rating:4,images:['./assets/jbl760nc-1.png','./assets/jbl760nc-2.png','./assets/jbl760nc-3.png','./assets/jbl760nc-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:7,title:'boAT Buds 203',brand:'boAt',category:'Earbuds',price:1999,oldPrice:2799,rating:4,images:['./assets/boat203-1.png','./assets/boat203-2.png','./assets/boat203-3.png','./assets/boat203-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:8,title:'boAt Earphones 228',brand:'boAt',category:'Earphones',price:4999,oldPrice:7799,rating:4,images:['./assets/boat228-1.png','./assets/boat228-2.png','./assets/boat228-3.png','./assets/boat228-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:9,title:'boAt Magnetic Neckband 255',brand:'boAt',category:'Neckband',price:3999,oldPrice:7799,rating:4,images:['./assets/boat255r-1.png','./assets/boat255r-2.png','./assets/boat255r-3.png','./assets/boat255r-4.png'],offers:['Bank Offer Flat ₹100 off','Exchange Offer']},
+{id:10,title:'boAt Earbuds 381',brand:'boAt',category:'Earbuds',price:2999,oldPrice:7799,rating:4,images:['./assets/boat381-1.png','./assets/boat381-2.png','./assets/boat381-3.png','./assets/boat381-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:11,title:'boAt BassHeads 410',brand:'boAt',category:'Headphones',price:4999,oldPrice:7799,rating:4,images:['./assets/boat410-1.png','./assets/boat410-2.png','./assets/boat410-3.png','./assets/boat410-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:12,title:'JBL Earphones endu',brand:'JBL',category:'Earphones',price:5999,oldPrice:7799,rating:4,images:['./assets/jbl-endu-1.png','./assets/jbl-endu-2.png','./assets/jbl-endu-3.png','./assets/jbl-endu-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:13,title:'JBL Neckband 200',brand:'JBL',category:'Neckband',price:5699,oldPrice:7799,rating:4,images:['./assets/jbl200bt-1.png','./assets/jbl200bt-2.png','./assets/jbl200bt-3.png','./assets/jbl200bt-4.png'],offers:['Bank Offer Flat ₹300 off']},
+{id:14,title:'JBL BassHeads 500',brand:'JBL',category:'Headphones',price:6999,oldPrice:7799,rating:4,images:['./assets/jbl500bt-1.png','./assets/jbl500bt-2.png','./assets/jbl500bt-3.png','./assets/jbl500bt-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:15,title:'Sony Earphones ex14ap',brand:'Sony',category:'Earphones',price:6999,oldPrice:7799,rating:4,images:['./assets/sony-ex14ap-1.png','./assets/sony-ex14ap-2.png','./assets/sony-ex14ap-3.png','./assets/sony-ex14ap-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:16,title:'Sony Earbuds 1000xm4',brand:'Sony',category:'Earbuds',price:3999,oldPrice:7799,rating:4,images:['./assets/sony1000xm4-1.png','./assets/sony1000xm4-2.png','./assets/sony1000xm4-3.png','./assets/sony1000xm4-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:17,title:'Sony BassHeads 710n',brand:'Sony',category:'Headphones',price:5999,oldPrice:7799,rating:4,images:['./assets/sonyCh710n-1.png','./assets/sonyCh710n-2.png','./assets/sonyCh710n-3.png','./assets/sonyCh710n-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:18,title:'SonyXb Neckband 400',brand:'Sony',category:'Neckband',price:5999,oldPrice:7799,rating:4,images:['./assets/sonyXb400-1.png','./assets/sonyXb400-2.png','./assets/sonyXb400-3.png','./assets/sonyXb400-4.png'],offers:['Bank Offer Flat ₹100 off']},
+{id:19,title:'JBL Live 100NC',brand:'JBL',category:'Earbuds',price:8999,oldPrice:14999,rating:5,images:['./assets/jbl100-1.png','./assets/jbl100-2.png','./assets/jbl100-3.png','./assets/jbl100-4.png'],offers:['Bank Offer 5% cashback','Free delivery']}
+];
+
+/* ---------- State ---------- */
+let cart = [];
+const productGrid = document.getElementById('productGrid');
+const cartBtn = document.getElementById('cartBtn');
+const cartDrawer = document.getElementById('cartDrawer');
+const cartItemsEl = document.getElementById('cartItems');
+const cartCountEl = document.getElementById('cartCount');
+const subtotalEl = document.getElementById('subtotal');
+const discountEl = document.getElementById('discount');
+const totalEl = document.getElementById('total');
+
+const searchInput = document.getElementById('searchInput');
+const sortOptions = document.getElementById('sortOptions');
+const priceRange = document.getElementById('priceRange');
+const priceLabel = document.getElementById('priceLabel');
+const brandCheckboxes = Array.from(document.querySelectorAll("input[name='brand']"));
+const catCheckboxes = Array.from(document.querySelectorAll("input[name='cat']"));
+const checkoutBtn = document.getElementById('checkoutBtn');
+const closeCartBtn = document.getElementById('closeCartBtn');
+
+/* ---------- Utilities ---------- */
+function saveCart(){ localStorage.setItem('techShopCart', JSON.stringify(cart)); }
+function loadCart(){ const raw = localStorage.getItem('techShopCart'); if(raw) cart = JSON.parse(raw); else cart = []; updateCartUI(); }
+function currency(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
+
+/* ---------- Cart Logic ---------- */
+function addToCartById(id){
+  const p = PRODUCTS.find(x => x.id === id);
+  if(!p) return;
+  const item = cart.find(c => c.id === id);
+  if(item) item.qty++;
+  else cart.push({...p, qty:1});
+  saveCart();
+  updateCartUI();
+  openCart();
+}
+function changeQty(id, delta){
+  cart = cart.map(i => i.id === id ? {...i, qty: Math.max(1, i.qty + delta)} : i);
+  saveCart();
+  updateCartUI();
+}
+function removeFromCart(id){
+  cart = cart.filter(i => i.id !== id);
+  saveCart();
+  updateCartUI();
+}
+function updateCartUI(){
+  cartItemsEl.innerHTML = '';
+  let subtotal = 0;
+  cart.forEach(item=>{
+    subtotal += item.price * item.qty;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <img src="${item.images && item.images[0] ? item.images[0] : ''}" alt="${escapeHtml(item.title)}" />
+      <div class="ci-info">
+        <div style="font-weight:700;color:#e9f0f5;">${escapeHtml(item.title)}</div>
+        <div class="small">${escapeHtml(item.brand)} • ${escapeHtml(item.category)}</div>
+        <div class="qty-controls">
+          <button data-id="${item.id}" class="dec">-</button>
+          <div style="min-width:28px;text-align:center;">${item.qty}</div>
+          <button data-id="${item.id}" class="inc">+</button>
+          <button data-id="${item.id}" class="remove-btn" style="margin-left:8px;">Remove</button>
+        </div>
+      </div>
+      <div style="font-weight:800;">${currency(item.price * item.qty)}</div>
+    `;
+    cartItemsEl.appendChild(div);
+  });
+  subtotalEl.textContent = currency(subtotal);
+  discountEl.textContent = currency(0);
+  totalEl.textContent = currency(subtotal);
+
+  cartCountEl.textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+  // attach handlers
+  cartItemsEl.querySelectorAll('.dec').forEach(b => b.onclick = ()=> changeQty(parseInt(b.dataset.id), -1));
+  cartItemsEl.querySelectorAll('.inc').forEach(b => b.onclick = ()=> changeQty(parseInt(b.dataset.id), +1));
+  cartItemsEl.querySelectorAll('.remove-btn').forEach(b => b.onclick = ()=> removeFromCart(parseInt(b.dataset.id)));
+}
+
+/* ---------- Helpers ---------- */
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#96;','=':'&#61;'})[s]); }
+function openCart(){ cartDrawer.style.display = 'block'; cartDrawer.setAttribute('aria-hidden','false'); }
+function closeCart(){ cartDrawer.style.display = 'none'; cartDrawer.setAttribute('aria-hidden','true'); }
+
+/* ---------- Rendering Products (DOM-safe) ---------- */
+function renderProducts(){
+  const q = searchInput.value.trim().toLowerCase();
+  const sortVal = sortOptions.value;
+  const maxPrice = parseInt(priceRange.value,10);
+
+  const selectedBrands = brandCheckboxes.filter(c=>c.checked).map(c=>c.value);
+  const selectedCats = catCheckboxes.filter(c=>c.checked).map(c=>c.value);
+
+  let filtered = PRODUCTS.filter(p=>{
+    if(q && !p.title.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q)) return false;
+    if(selectedBrands.length && !selectedBrands.includes(p.brand)) return false;
+    if(selectedCats.length && !selectedCats.includes(p.category)) return false;
+    if(p.price > maxPrice) return false;
+    return true;
+  });
+
+  if(sortVal === 'priceLowHigh') filtered.sort((a,b)=>a.price-b.price);
+  else if(sortVal === 'priceHighLow') filtered.sort((a,b)=>b.price-a.price);
+  else if(sortVal === 'nameAToZ') filtered.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(sortVal === 'nameZToA') filtered.sort((a,b)=>b.title.localeCompare(a.title));
+  else if(sortVal === 'ratingHighLow') filtered.sort((a,b)=>b.rating - a.rating);
+
+  productGrid.innerHTML = '';
+  filtered.forEach(p=>{
+    const card = document.createElement('article');
+    card.className = 'card';
+    // image block
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'img-wrap';
+    const img = document.createElement('img');
+    img.src = p.images && p.images[0] ? p.images[0] : '';
+    img.alt = p.title;
+    imgWrap.appendChild(img);
+    imgWrap.onclick = ()=> { window.location.href = 'product-details.html?id=' + p.id; };
+    card.appendChild(imgWrap);
+
+    // title and meta
+    const title = document.createElement('div');
+    title.className = 'title';
+    title.textContent = p.title;
+    card.appendChild(title);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = `${p.brand} • ${p.category}`;
+    card.appendChild(meta);
+
+    // rating
+    const rating = document.createElement('div');
+    rating.className = 'rating';
+    rating.textContent = '★'.repeat(Math.max(0, Math.floor(p.rating))) + (p.rating % 1 ? '☆' : '');
+    card.appendChild(rating);
+
+    // price row
+    const pr = document.createElement('div');
+    pr.className = 'price-row';
+    const priceEl = document.createElement('div');
+    priceEl.className = 'price';
+    priceEl.textContent = currency(p.price);
+    const oldEl = document.createElement('div');
+    oldEl.className = 'old';
+    oldEl.textContent = currency(p.oldPrice);
+    pr.appendChild(priceEl);
+    pr.appendChild(oldEl);
+    card.appendChild(pr);
+
+    // offers small
+    if(p.offers && p.offers.length){
+      const offers = document.createElement('div');
+      offers.className = 'offers';
+      offers.textContent = p.offers[0];
+      card.appendChild(offers);
+    }
+
+    // buttons
+    const btnRow = document.createElement('div');
+    btnRow.className = 'btn-row';
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn add-btn';
+    addBtn.textContent = 'Add to cart';
+    addBtn.onclick = ()=> addToCartById(p.id);
+
+    const buyBtn = document.createElement('button');
+    buyBtn.className = 'btn buy-btn';
+    buyBtn.textContent = 'Buy now';
+    buyBtn.onclick = ()=> { addToCartById(p.id); window.location.href = 'checkout.html'; };
+
+    btnRow.appendChild(addBtn);
+    btnRow.appendChild(buyBtn);
+    card.appendChild(btnRow);
+
+    productGrid.appendChild(card);
+  });
+}
+
+/* ---------- Event wiring ---------- */
+searchInput.addEventListener('input', renderProducts);
+sortOptions.addEventListener('change', renderProducts);
+priceRange.addEventListener('input', ()=>{ priceLabel.textContent = priceRange.value; renderProducts(); });
+brandCheckboxes.forEach(cb => cb.addEventListener('change', renderProducts));
+catCheckboxes.forEach(cb => cb.addEventListener('change', renderProducts));
+cartBtn.addEventListener('click', ()=> cartDrawer.style.display === 'block' ? closeCart() : openCart());
+closeCartBtn.addEventListener('click', closeCart);
+checkoutBtn.addEventListener('click', ()=> { window.location.href = 'checkout.html'; });
+
+/* ---------- Init ---------- */
+(function init(){
+  // set price label
+  priceLabel.textContent = priceRange.value;
+  // try loading cart from localStorage
+  if(localStorage.getItem('techShopCart')){
+    try { cart = JSON.parse(localStorage.getItem('techShopCart')); } catch(e){ cart = []; }
+  }
+  updateCartUI();
+  renderProducts();
+})();
+</script>
+
+</body>
+</html>

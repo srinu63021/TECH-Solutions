@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+body{background:#0f0f10;color:#fff;padding:20px;}
+.container{display:flex;gap:20px;flex-wrap:wrap;}
+.images{width:45%;min-width:280px;}
+.images img{width:100%;border-radius:8px;}
+.thumbnails{display:flex;gap:10px;margin-top:10px;}
+.thumbnails img{width:60px;height:60px;border-radius:6px;cursor:pointer;border:2px solid transparent;}
+.thumbnails img:hover{border-color:#ff9f00;}
+
+.details{width:50%;min-width:280px;display:flex;flex-direction:column;gap:10px;}
+
+.price{font-size:22px;color:#ff9f00;}
+.old{color:#888;text-decoration:line-through;margin-left:10px;font-size:16px;}
+.rating{color:#ffbf00;font-size:16px;}
+.offers{color:#0f0;font-size:14px;}
+
+button{padding:10px;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
+.add-btn{background:#ff9f00;color:#000;}
+.buy-btn{background:#fb641b;color:#fff;}
+
+.back{color:#0af;text-decoration:underline;cursor:pointer;margin-bottom:15px;display:inline-block;}
+</style>
+</head>
+<body>
+
+<div class="back" onclick="history.back()">← Back to Products</div>
+
+<div class="container">
+  <div class="images">
+    <img id="mainImg" src="" alt="Product">
+    <div class="thumbnails" id="thumbs"></div>
+  </div>
+
+  <div class="details">
+    <h2 id="title"></h2>
+    <div id="brandCat"></div>
+    <div class="price">
+      <span id="price"></span>
+      <span class="old" id="oldPrice"></span>
+    </div>
+    <div class="rating" id="rating"></div>
+    <div class="offers" id="offers"></div>
+
+    <button class="add-btn" id="addCartBtn">Add to Cart</button>
+    <button class="buy-btn" id="buyNowBtn">Buy Now</button>
+  </div>
+</div>
+
+<script>
+const PRODUCTS = [
+{id:1, title:'JBL Live 660NC', brand:'JBL', category:'Headphones', price:9999, oldPrice:14999, rating:5, images:['./assets/jbl660nc-1.png','./assets/jbl660nc-2.png','./assets/jbl660nc-3.png','./assets/jbl660nc-4.png'], offers:['Bank Offer 5% cashback','Free delivery']},
+{id:2, title:'boAt Rockerz 518', brand:'boAt', category:'Headphones', price:1299, oldPrice:3990, rating:5, images:['./assets/boat518-1.png','./assets/boat518-2.png','./assets/boat518-3.png','./assets/boat518-4.png'], offers:['Bank Offer 5% cashback']},
+{id:3, title:'boAt Airdopes 131', brand:'boAt', category:'Earbuds', price:1099, oldPrice:2990, rating:5, images:['./assets/boat131-1.png','./assets/boat131-2.png','./assets/boat131-3.png','./assets/boat131-4.png'], offers:['Special Price: Extra 10% off']},
+{id:4, title:'boAt BassHeads 110', brand:'boAt', category:'Earphones', price:449, oldPrice:999, rating:4, images:['./assets/boat110-1.png','./assets/boat110-2.png','./assets/boat110-3.png','./assets/boat110-4.png'], offers:['Flat ₹50 off']},
+{id:5, title:'Sony WH-XB910N', brand:'Sony', category:'Headphones', price:13489, oldPrice:19990, rating:4, images:['./assets/sonyXb910n-1.png','./assets/sonyXb910n-2.png','./assets/sonyXb910n-3.png','./assets/sonyXb910n-4.png'], offers:['Exchange Offer']},
+{id:6, title:'JBL Tune 760NC', brand:'JBL', category:'Headphones', price:5999, oldPrice:7799, rating:4, images:['./assets/jbl760nc-1.png','./assets/jbl760nc-2.png','./assets/jbl760nc-3.png','./assets/jbl760nc-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:7, title:'boAT Buds 203', brand:'boAt', category:'Earbuds', price:1999, oldPrice:2799, rating:4, images:['./assets/boat203-1.png','./assets/boat203-2.png','./assets/boat203-3.png','./assets/boat203-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:8, title:'boAt Earphones 228', brand:'boAt', category:'Earphones', price:4999, oldPrice:7799, rating:4, images:['./assets/boat228-1.png','./assets/boat228-2.png','./assets/boat228-3.png','./assets/boat228-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:9, title:'boAt Magnetic Neckband 255', brand:'boAt', category:'Neckband', price:3999, oldPrice:7799, rating:4, images:['./assets/boat255r-1.png','./assets/boat255r-2.png','./assets/boat255r-3.png','./assets/boat255r-4.png'], offers:['Bank Offer Flat ₹100 off','Exchange Offer']},
+{id:10, title:'boAt Earbuds 381', brand:'boAt', category:'Earbuds', price:2999, oldPrice:7799, rating:4, images:['./assets/boat381-1.png','./assets/boat381-2.png','./assets/boat381-3.png','./assets/boat381-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:11, title:'boAt BassHeads 410', brand:'boAt', category:'Headphones', price:4999, oldPrice:7799, rating:4, images:['./assets/boat410-1.png','./assets/boat410-2.png','./assets/boat410-3.png','./assets/boat410-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:12, title:'JBL Earphones endu', brand:'JBL', category:'Earphones', price:5999, oldPrice:7799, rating:4, images:['./assets/jbl-endu-1.png','./assets/jbl-endu-2.png','./assets/jbl-endu-3.png','./assets/jbl-endu-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:13, title:'JBL Neckband 200', brand:'JBL', category:'Neckband', price:5699, oldPrice:7799, rating:4, images:['./assets/jbl200bt-1.png','./assets/jbl200bt-2.png','./assets/jbl200bt-3.png','./assets/jbl200bt-4.png'], offers:['Bank Offer Flat ₹300 off']},
+{id:14, title:'JBL BassHeads 500', brand:'JBL', category:'Headphones', price:6999, oldPrice:7799, rating:4, images:['./assets/jbl500bt-1.png','./assets/jbl500bt-2.png','./assets/jbl500bt-3.png','./assets/jbl500bt-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:15, title:'Sony Earphones ex14ap', brand:'Sony', category:'Earphones', price:6999, oldPrice:7799, rating:4, images:['./assets/sony-ex14ap-1.png','./assets/sony-ex14ap-2.png','./assets/sony-ex14ap-3.png','./assets/sony-ex14ap-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:16, title:'Sony Earbuds 1000xm4', brand:'Sony', category:'Earbuds', price:3999, oldPrice:7799, rating:4, images:['./assets/sony1000xm4-1.png','./assets/sony1000xm4-2.png','./assets/sony1000xm4-3.png','./assets/sony1000xm4-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:17, title:'Sony BassHeads 710n', brand:'Sony', category:'Headphones', price:5999, oldPrice:7799, rating:4, images:['./assets/sonyCh710n-1.png','./assets/sonyCh710n-2.png','./assets/sonyCh710n-3.png','./assets/sonyCh710n-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:18, title:'SonyXb Neckband 400', brand:'Sony', category:'Neckband', price:5999, oldPrice:7799, rating:4, images:['./assets/sonyXb400-1.png','./assets/sonyXb400-2.png','./assets/sonyXb400-3.png','./assets/sonyXb400-4.png'], offers:['Bank Offer Flat ₹100 off']},
+{id:19, title:'JBL Live 100NC', brand:'JBL', category:'Earbuds', price:8999, oldPrice:14999, rating:5, images:['./assets/jbl100-1.png','./assets/jbl100-2.png','./assets/jbl100-3.png','./assets/jbl100-4.png'], offers:['Bank Offer 5% cashback','Free delivery']}
+];
+
+// --- GET ID FROM URL ---
+const params = new URLSearchParams(window.location.search);
+const id = parseInt(params.get("id"));
+
+// --- FIND PRODUCT ---
+const product = PRODUCTS.find(p => p.id === id);
+
+if (!product) {
+  document.body.innerHTML = "<h2 style='color:red'>Product Not Found</h2>";
+}
+
+// --- SET MAIN IMAGE ---
+document.getElementById("mainImg").src = product.images[0];
+
+// --- THUMBNAILS ---
+const thumbs = document.getElementById("thumbs");
+product.images.forEach(img=>{
+  const t = document.createElement("img");
+  t.src = img;
+  t.onclick = ()=>{ document.getElementById("mainImg").src = img };
+  thumbs.appendChild(t);
+});
+
+// --- SET TEXT CONTENT ---
+document.getElementById("title").textContent = product.title;
+document.getElementById("brandCat").textContent = `${product.brand} | ${product.category}`;
+document.getElementById("price").textContent = "₹" + product.price;
+document.getElementById("oldPrice").textContent = "₹" + product.oldPrice;
+document.getElementById("rating").textContent = "★".repeat(product.rating);
+document.getElementById("offers").textContent = "Offers: " + product.offers.join(", ");
+
+// --- BUTTONS ---
+document.getElementById("addCartBtn").onclick = ()=>{
+  alert(product.title + " added to cart!");
+};
+
+document.getElementById("buyNowBtn").onclick = ()=>{
+  window.location.href = "payment.html?id=" + product.id;
+};
+</script>
+
+</body>
+</html>
